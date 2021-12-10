@@ -11,7 +11,24 @@ class ExpressServer {
   }
 
   middlewares() {
+    this.app.get('/mine-block', (req, res) => {
+      const lastBlock = this.blockchain.getLastBlock();
+      const { proof: lastBlockProof } = lastBlock;
+      const proof = this.blockchain.proofOfWork(lastBlockProof);
+      const prevHash = this.blockchain.hash(lastBlock);
+      const block = this.blockchain.createBlock(proof, prevHash);
 
+      return res.json(block);
+    });
+
+    this.app.get('/get-chain', (req, res) => {
+      const response = { 
+        chain: this.blockchain.chain,
+        length: this.blockchain.chain.length 
+      };
+
+      return res.json(response);
+    });
   }
 
   listen() {
